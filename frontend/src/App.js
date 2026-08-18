@@ -2185,26 +2185,20 @@ function GoalLargeCard({
   onDelete,
   onContribute,
 }) {
-  const saved = Number(
-    goal.saved_amount || 0
-  );
+  const saved = Number(goal.saved_amount || 0);
 
-  const target = Number(
-    goal.total_amount || 0
+  const target = Number(goal.total_amount || 0);
+
+  const plannedThisMonth = Number(
+    month?.goal_inclusions?.[goal.goal_id]?.planned || 0
   );
 
   const remaining = Math.max(
     0,
     target - saved
   );
-  
-  const plannedThisMonth = Number(
-   month?.goal_inclusions?.[goal.goal_id]
-    ?.planned || 0
-  );
 
-  const monthlyTarget =
-   expectedMonthlySaving(goal);
+  const monthlyTarget = expectedMonthlySaving(goal);
 
   const progress = percentage(
     saved,
@@ -2256,36 +2250,35 @@ function GoalLargeCard({
         style={{
           marginTop: 20,
           marginBottom: 0,
+          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
         }}
       >
         <div className="card stat-card">
-         <p className="stat-label">
+          <p className="stat-label">
             Expected monthly saving
-        </p>
-        
-        {plannedThisMonth > 0 && (
-  <div className="card stat-card">
-    <p className="stat-label">
-      Planned this month
-    </p>
+          </p>
 
-    <p className="stat-value">
-      {formatMoney(plannedThisMonth)}
-    </p>
+          <p className="stat-value">
+            {formatMoney(monthlyTarget)}
+          </p>
 
-    <p className="stat-note">
-      Included in this month's budget
-    </p>
-  </div>
-)}
+          <p className="stat-note">
+            To reach the goal by the due date
+          </p>
+        </div>
 
-        <p className="stat-value">
-          {formatMoney(monthlyTarget)}
-        </p>
+        <div className="card stat-card">
+          <p className="stat-label">
+            Planned this month
+          </p>
 
-        <p className="stat-note">
-          To reach the goal by the due date
-        </p>
+          <p className="stat-value">
+            {formatMoney(plannedThisMonth)}
+          </p>
+
+          <p className="stat-note">
+            Included in this month's budget
+          </p>
         </div>
 
         <div className="card stat-card">
@@ -2295,6 +2288,10 @@ function GoalLargeCard({
 
           <p className="stat-value">
             {formatMoney(remaining)}
+          </p>
+
+          <p className="stat-note">
+            Still needed for this goal
           </p>
         </div>
       </div>
@@ -2324,8 +2321,8 @@ function GoalLargeCard({
         </Button>
 
         <Button
-          variant="secondary"
           small
+          variant="secondary"
           onClick={onEdit}
         >
           <Edit3 size={14} />
@@ -2333,8 +2330,8 @@ function GoalLargeCard({
         </Button>
 
         <Button
-          variant="danger"
           small
+          variant="danger"
           onClick={onDelete}
         >
           <Trash2 size={14} />
@@ -2344,7 +2341,6 @@ function GoalLargeCard({
     </div>
   );
 }
-
 
 /* ============================================================
    GOAL MODAL
