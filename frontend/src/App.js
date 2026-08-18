@@ -967,11 +967,21 @@ function Dashboard({
               />
             ) : (
               <div className="goal-list">
-                {goals.slice(0, 3).map((goal) => (
-                  <div
-                    className="goal-card"
-                    key={goal.goal_id}
-                  >
+                {goals.slice(0, 3).map((goal) => {
+                  const plannedThisMonth = Number(
+                    goalInclusions[goal.goal_id]?.planned || 0
+                  );
+
+                  const plannedProgress = Math.min(
+                    Number(goal.total_amount || 0),
+                    Number(goal.saved_amount || 0) + plannedThisMonth
+                  );
+
+                  return (
+                    <div
+                      className="goal-card"
+                      key={goal.goal_id}
+                    >
                     <div className="goal-top">
                       <div>
                         <p className="goal-name">
@@ -985,7 +995,7 @@ function Dashboard({
 
                       <span className="goal-percent">
                         {percentage(
-                          goal.saved_amount,
+                          plannedProgress,
                           goal.total_amount
                         ).toFixed(0)}
                         %
@@ -994,7 +1004,7 @@ function Dashboard({
 
                     <div className="goal-progress">
                       <ProgressBar
-                        value={goal.saved_amount}
+                        value={plannedProgress}
                         total={goal.total_amount}
                         variant="sage"
                       />
@@ -1022,12 +1032,15 @@ function Dashboard({
                     ) && (
                       <div className="goal-actions">
                         <span className="form-hint">
-                          Included in this month's plan
+                          {plannedThisMonth > 0
+                            ? `${formatMoney(plannedThisMonth)} planned this month`
+                            : "Not included in this month's plan"}
                         </span>
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                 })}
               </div>
             )}
           </div>
@@ -2200,8 +2213,13 @@ function GoalLargeCard({
 
   const monthlyTarget = expectedMonthlySaving(goal);
 
+  const plannedProgress = Math.min(
+    target,
+    saved + plannedThisMonth
+  );
+
   const progress = percentage(
-    saved,
+    plannedProgress,
     target
   );
 
@@ -2229,7 +2247,7 @@ function GoalLargeCard({
 
       <div className="goal-progress">
         <ProgressBar
-          value={saved}
+          value={plannedProgress}
           total={target}
           variant="sage"
         />
@@ -3128,6 +3146,7 @@ function HistoryPage({
 function ReportsPage({
   reports,
   goals,
+  month
 }) {
   const months = reports?.months || [];
 
@@ -3145,19 +3164,35 @@ function ReportsPage({
     })
   );
 
-  const goalData = goals.map(
-    (goal) => ({
+  const goalData = goals.map((goal) => {
+    const saved = Number(
+      goal.saved_amount || 0
+    );
+
+    const target = Number(
+      goal.total_amount || 0
+    );
+
+    const plannedThisMonth = Number(
+      month?.goal_inclusions?.[goal.goal_id]
+        ?.planned || 0
+    );
+
+    const planned = Math.min(
+      target,
+      saved + plannedThisMonth
+    );
+
+    return {
       name: goal.name,
-      saved: Number(
-        goal.saved_amount || 0
-      ),
+      saved,
+      planned,
       remaining: Math.max(
         0,
-        Number(goal.total_amount || 0) -
-          Number(goal.saved_amount || 0)
+        target - planned
       ),
-    })
-  );
+    };
+  });
 
   const pieData = goals.map(
     (goal) => ({
@@ -3432,8 +3467,8 @@ function ReportsPage({
                   <Legend />
 
                   <Bar
-                    dataKey="saved"
-                    name="Saved"
+                    dataKey="planned"
+                    name="Planned"
                     fill="#285447"
                     radius={[0, 4, 4, 0]}
                   />
@@ -4126,6 +4161,7 @@ export default function App() {
               <ReportsPage
                 reports={reports}
                 goals={goals}
+                month={month}
               />
             )}
           </div>
