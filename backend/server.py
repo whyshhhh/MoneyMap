@@ -787,64 +787,6 @@ async def add_contribution(
         },
     )
 
-    current_month = month_key()
-
-    month_doc = await db.months.find_one(
-        {
-            "user_id": user["user_id"],
-            "month": current_month,
-        },
-        {"_id": 0},
-    )
-
-    existing_inclusion = goal_inclusions.get(goal_id, {})
-
-    if isinstance(existing_inclusion, dict):
-        planned_amount = float(
-            existing_inclusion.get(
-                "planned",
-                existing_inclusion.get("amount", 0)
-            ) or 0
-        )
-    else:
-        planned_amount = float(existing_inclusion or 0)
-
-    goal_inclusions[goal_id] = {
-        "included": True,
-        "planned": planned_amount,
-        "amount": planned_amount,
-    }
-
-    goal_inclusions[goal_id] = {
-        "included": True,
-        "planned": amount,
-        "amount": amount,
-    }
-
-    await db.months.update_one(
-        {
-            "user_id": user["user_id"],
-            "month": current_month,
-        },
-        {
-            "$set": {
-                "goal_inclusions": goal_inclusions,
-                "updated_at": now_iso(),
-            },
-            "$setOnInsert": {
-                "month_id": (
-                    f"month_{uuid.uuid4().hex[:12]}"
-                ),
-                "user_id": user["user_id"],
-                "month": current_month,
-                "income": 0,
-                "categories": [],
-                "expenses": [],
-                "notes": "",
-            },
-        },
-        upsert=True,
-    )
     return {
         "ok": True,
         "contribution": contribution,
