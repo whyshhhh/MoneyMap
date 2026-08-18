@@ -474,38 +474,38 @@ async def save_current_month(
     key = month_key()
 
     update = payload.model_dump()
-
     update["updated_at"] = now_iso()
 
     goal_inclusions = update.get("goal_inclusions", {})
-
     normalized_goal_inclusions = {}
 
     for goal_id, value in goal_inclusions.items():
+
         if isinstance(value, dict):
-           planned = float(
-            value.get(
-                "planned",
-                value.get("amount", 0)
-            ) or 0
-        )
+            planned = float(
+                value.get(
+                    "planned",
+                    value.get("amount", 0)
+                ) or 0
+            )
 
-        normalized_goal_inclusions[goal_id] = {
-            **value,
-            "included": bool(
-                value.get("included", False)
-            ),
-            "planned": planned,
-            "amount": planned,
-        }
-    else:
-        planned = float(value or 0)
+            normalized_goal_inclusions[goal_id] = {
+                **value,
+                "included": bool(
+                    value.get("included", False)
+                ),
+                "planned": planned,
+                "amount": planned,
+            }
 
-        normalized_goal_inclusions[goal_id] = {
-            "included": planned > 0,
-            "planned": planned,
-            "amount": planned,
-        }
+        else:
+            planned = float(value or 0)
+
+            normalized_goal_inclusions[goal_id] = {
+                "included": planned > 0,
+                "planned": planned,
+                "amount": planned,
+            }
 
     update["goal_inclusions"] = normalized_goal_inclusions
 
