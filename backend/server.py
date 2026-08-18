@@ -797,11 +797,23 @@ async def add_contribution(
         {"_id": 0},
     )
 
-    goal_inclusions = (
-        month_doc.get("goal_inclusions", {})
-        if month_doc
-        else {}
-    )
+    existing_inclusion = goal_inclusions.get(goal_id, {})
+
+    if isinstance(existing_inclusion, dict):
+        planned_amount = float(
+            existing_inclusion.get(
+                "planned",
+                existing_inclusion.get("amount", 0)
+            ) or 0
+        )
+    else:
+        planned_amount = float(existing_inclusion or 0)
+
+    goal_inclusions[goal_id] = {
+        "included": True,
+        "planned": planned_amount,
+        "amount": planned_amount,
+    }
 
     goal_inclusions[goal_id] = {
         "included": True,
