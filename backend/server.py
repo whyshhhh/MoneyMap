@@ -312,8 +312,8 @@ async def register(
         value=token,
         max_age=SESSION_DURATION_DAYS * 24 * 60 * 60,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         path="/",
     )
 
@@ -380,8 +380,8 @@ async def login(
         value=token,
         max_age=SESSION_DURATION_DAYS * 24 * 60 * 60,
         httponly=True,
-        secure=False,
-        samesite="lax",
+        secure=True,
+        samesite="none",
         path="/",
     )
 
@@ -1105,6 +1105,8 @@ app.include_router(api)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        FRONTEND_URL,
+        "https://money-map-gamma-six.vercel.app",
         "http://localhost:3000",
         "http://localhost:3001",
         "http://127.0.0.1:3000",
