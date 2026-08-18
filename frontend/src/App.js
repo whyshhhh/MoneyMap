@@ -292,17 +292,30 @@ function MoneyInput({
   placeholder = "0",
   disabled = false,
 }) {
+  const [focused, setFocused] = useState(false);
+
+  const displayValue =
+    focused && Number(value) === 0
+      ? ""
+      : value;
+
   return (
     <div className="money-input">
-      <span className="money-symbol">{CURRENCY}</span>
+      <span className="money-symbol">
+        {CURRENCY}
+      </span>
 
       <input
         className="form-input"
         type="number"
         min="0"
         step="1"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
+        value={displayValue}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onChange={(event) =>
+          onChange(event.target.value)
+        }
         placeholder={placeholder}
         disabled={disabled}
       />
