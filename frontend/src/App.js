@@ -4091,6 +4091,7 @@ export default function App() {
             {page === "goals" && (
               <GoalsPage
                 goals={goals}
+                month={month}
                 onCreateGoal={
                   createGoal
                 }
