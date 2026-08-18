@@ -314,7 +314,6 @@ async def register(
         httponly=True,
         secure=True,
         samesite="none",
-        path="/",
     )
 
     return {
@@ -382,7 +381,6 @@ async def login(
         httponly=True,
         secure=True,
         samesite="none",
-        path="/",
     )
 
     return {
